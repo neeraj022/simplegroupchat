@@ -1,0 +1,50 @@
+<html>
+<head>
+    <title>Web sockets</title>
+    <style>
+        .logClass {
+            width: 300px;
+            height: 300px;
+            border: 5px solid black;
+            border-radius: 3px;
+            margin: 0px auto;
+        }
+        div#sendCtrls {
+            margin: 30px auto;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="received" class="logClass"> </div>
+    <div id="sendCtrls">
+        <input type="text" placeholder="Your message here">
+        <button>Send</button>
+    </div>
+    <script>
+        var name = prompt('enter your name buddy');
+    var sock = new WebSocket("ws://localhost:5001")
+    sock.onopen  = function(event) {
+        sock.send(JSON.stringify({
+            type: 'name',
+            data: name
+        }))
+    }
+    sock.onmessage = function(event) {
+        var receivedDive = document.getElementById('received')
+        var json = JSON.parse(event.data)
+        receivedDive.innerHTML += json.name+": "+ json.data + "<br>"
+    }
+    document.querySelector('button').onclick= function() {
+        var value = document.querySelector('input').value
+        var receivedDive = document.getElementById('received')
+        receivedDive.innerHTML += "You: "+value + "<br>"
+        sock.send(JSON.stringify({
+            type: 'message',
+            data: value
+        }))
+    }
+    </script>
+    </body>
+</html>
